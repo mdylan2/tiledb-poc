@@ -9,3 +9,6 @@ reset_local:
 
 slice_soma:
 	python slice_soma.py
+
+make_collection:
+	python tiledb_collection.py
