@@ -3,6 +3,9 @@ reset_s3:
 
 create_somas:
 	python tiledb_pipeline.py
-	
+
 reset_local:
 	rm -r adata/
+
+slice_soma:
+	python slice_soma.py
