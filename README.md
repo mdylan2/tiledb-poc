@@ -10,3 +10,4 @@ You can use make commands for quick reproduction
 - make create_somas: Will create somas from the anndata objects in the `adata/` folder on S3
 - make reset_s3: Will delete all the TileDB SOMA objects
 - make reset_local: Delete all adatas downloaded from S3
+- make slice_somas: Will slice a SOMA
