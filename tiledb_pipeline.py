@@ -34,7 +34,7 @@ class PAIDataset:
             )
             print(local_filepath)
         else:
-            print("File exists, skipping S3 download")
+            print("File exists locally, skipping S3 download")
             local_filepath = os.path.join("adata", f"{self.dataset_name}.h5ad")
 
         print("Converting to SOMA")

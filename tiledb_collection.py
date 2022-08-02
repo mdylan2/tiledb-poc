@@ -15,10 +15,14 @@ if __name__ == "__main__":
     cfg = {"S3_REGION": "us-east-2"}
     tdc = TileDBConfig(cfg)
     tiledb_ctx = tiledb.Ctx(tdc.cfg)
-    soco = tiledbsc.SOMACollection("s3://phenomic-tiledb-public/tiledb/soco", ctx=tiledb_ctx)
+    sopt = tiledbsc.SOMAOptions(member_uris_are_relative=False)
+    soco = tiledbsc.SOMACollection("s3://phenomic-tiledb-public/tiledb/soco", ctx=tiledb_ctx, soma_options=sopt)
     for dataset_name in dataset_names:
         dataset = PAIDataset(dataset_name=dataset_name, tiledb_config=tdc)
         s3_soma = dataset.s3_soma
-        print(s3_soma)
-        print(type(s3_soma))
-        soco.add(s3_soma)
+
+        if s3_soma.name not in soco:
+            soco.add(s3_soma, relative=False)
+
+        # soco.add(s3_soma, relative=False)
+    # print(soco.keys())

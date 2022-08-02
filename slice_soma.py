@@ -4,7 +4,7 @@ from utils import TileDBConfig
 if __name__ == "__main__":
     dataset_name = "external_azizi_cell_2018_29961579"
 
-    cfg = {"S3_REGION": "us-east-2"}
+    cfg = {"S3_REGION": "us-east-2", "py.max_incomplete_retries": "100", "py.init_buffer_bytes": 4 * 1024**3}
     tdc = TileDBConfig(cfg)
 
     dataset = PAIDataset(dataset_name=dataset_name, tiledb_config=tdc)

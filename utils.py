@@ -52,14 +52,17 @@ def download_data_from_s3_to_local(bucket: str, prefix: str, obj_key: str, downl
 
 
 class TileDBConfig:
-    def __init__(self, config):
+    def __init__(self, config=None):
         cfg = tiledb.Config()
-        for k, v in config.items():
-            if k == "S3_AWS_ACCESS_KEY_ID":
-                cfg["vfs.s3.aws_access_key_id"] = v
-            if k == "S3_SECRET_ACCESS_KEY":
-                cfg["vfs.s3.aws_secret_access_key"] = v
-            if k == "S3_REGION":
-                cfg["vfs.s3.region"] = v
+        if config:
+            for k, v in config.items():
+                if k == "S3_AWS_ACCESS_KEY_ID":
+                    cfg["vfs.s3.aws_access_key_id"] = v
+                if k == "S3_SECRET_ACCESS_KEY":
+                    cfg["vfs.s3.aws_secret_access_key"] = v
+                if k == "S3_REGION":
+                    cfg["vfs.s3.region"] = v
+                else:
+                    cfg[k] = v
 
         self.cfg = cfg
