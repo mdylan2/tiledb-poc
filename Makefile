@@ -12,3 +12,6 @@ slice_soma:
 
 make_collection:
 	python tiledb_collection.py
+
+slice_collection:
+	python slice_collection.py
