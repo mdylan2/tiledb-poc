@@ -1,11 +1,9 @@
-import tiledbsc, tiledbsc.io, tiledbsc.util
-import tiledb
-
-from utils import TileDBConfig
-from tiledb_pipeline import PAIDataset
+from utils.data_locator import DataLocator
+from data_classes.tiledb import PAISOMA, PAISOCO
 
 
 if __name__ == "__main__":
+    soco_name = "test"
     dataset_names = [
         "external_azizi_cell_2018_29961579",
         "external_bassez_natmed_2021_33958794",
@@ -18,18 +16,15 @@ if __name__ == "__main__":
         "external_slyper_natmed_2020_32405060",
         "external_wu_emboj_2021_32790115",
     ]
-
-    cfg = {"S3_REGION": "us-east-2"}
-    tdc = TileDBConfig(cfg)
-    tiledb_ctx = tiledb.Ctx(tdc.cfg)
-    sopt = tiledbsc.SOMAOptions(member_uris_are_relative=False)
-    soco = tiledbsc.SOMACollection("s3://phenomic-tiledb-public/tiledb/soco", ctx=tiledb_ctx, soma_options=sopt)
+    soco_locator = DataLocator(soco=True, benchmark=True, soco_name=soco_name)
+    soco = PAISOCO(data_locator=soco_locator, local_or_s3="s3")
+    print(soco.soma_options)
     for dataset_name in dataset_names:
-        dataset = PAIDataset(dataset_name=dataset_name, tiledb_config=tdc)
-        s3_soma = dataset.s3_soma
+        soma_locator = DataLocator(dataset_name=dataset_name, benchmark=True)
+        soma = PAISOMA(data_locator=soma_locator, local_or_s3="s3")
 
-        # if s3_soma.name not in soco:
-        soco.add(s3_soma, relative=False)
-
-        # soco.add(s3_soma, relative=False)
-    # print(soco.keys())
+        if soma.name not in soco:
+            print(f"Adding {soma} to {soco}")
+            soco.add(soma, relative=False)
+        else:
+            print(f"Skipping {soma}")

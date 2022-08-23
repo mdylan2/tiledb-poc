@@ -1,16 +1,12 @@
-import tiledbsc, tiledb
-from utils import TileDBConfig
+from data_classes.tiledb import PAISOCO
+from utils.data_locator import DataLocator
 
 if __name__ == "__main__":
     gene = "AC092143.3"
-    dataset_name = "soco"
+    soco_name = "test"
 
-    cfg = {"S3_REGION": "us-east-2", "py.max_incomplete_retries": "100", "py.init_buffer_bytes": 4 * 1024**3}
-    tdc = TileDBConfig(cfg)
-
-    tiledb_ctx = tiledb.Ctx(tdc.cfg)
-    sopt = tiledbsc.SOMAOptions(member_uris_are_relative=False)
-    soco = tiledbsc.SOMACollection("s3://phenomic-tiledb-public/tiledb/soco", ctx=tiledb_ctx, soma_options=sopt)
+    soco_locator = DataLocator(benchmark=True, soco=True, soco_name=soco_name)
+    soco = PAISOCO(data_locator=soco_locator, local_or_s3="s3")
 
     for soma in soco:
         print(f"{gene} present in {soma.name}:", gene in soma.var_keys())
@@ -21,3 +17,5 @@ if __name__ == "__main__":
         # var_ids="CTHRC1",
     )
     print(slice)
+
+    soco.find_unique_obs_values("standard_true_celltype_v5")
