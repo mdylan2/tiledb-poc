@@ -32,6 +32,8 @@ if __name__ == "__main__":
     for dataset_name in dataset_names:
         soma_locator = DataLocator(dataset_name=dataset_name, benchmark=True)
         soma = PAISOMA(data_locator=soma_locator, local_or_s3="s3")
+        print(soma)
+        print(soma.obs.df())
 
         if soma.name not in soco:
             print(f"Adding {soma} to {soco}")
