@@ -1,5 +1,15 @@
+import tiledb
+import tiledbsc
 from utils.data_locator import DataLocator
 from data_classes.tiledb import PAISOMA, PAISOCO
+
+print(
+    [
+        tiledbsc.__version__,
+        tiledb.__version__,
+        ".".join(str(ijk) for ijk in list(tiledb.libtiledb.version())),
+    ]
+)
 
 
 if __name__ == "__main__":
