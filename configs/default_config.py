@@ -16,6 +16,6 @@ data:
             max_incomplete_retries: 100
             init_buffer_bytes: 4294967296
         somaoptions:
-            member_uris_are_relative: False
+            member_uris_are_relative: True
 """
 default_config = yaml.load(default_config, Loader=yaml.Loader)

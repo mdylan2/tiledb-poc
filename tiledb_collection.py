@@ -25,6 +25,6 @@ if __name__ == "__main__":
 
         if soma.name not in soco:
             print(f"Adding {soma} to {soco}")
-            soco.add(soma, relative=False)
+            soco.add(soma, relative=True)
         else:
             print(f"Skipping {soma}")
