@@ -23,6 +23,8 @@ pathspec==0.9.0
 patsy==0.5.2
 Pillow==9.2.0
 platformdirs==2.5.2
+plotly==5.10.0
+plotly-express==0.4.1
 pyarrow==8.0.0
 pynndescent==0.5.7
 pyparsing==3.0.9
@@ -38,6 +40,7 @@ session-info==1.0.0
 six==1.16.0
 statsmodels==0.13.2
 stdlib-list==0.8.0
+tenacity==8.0.1
 threadpoolctl==3.1.0
 tiledb==0.17.1
 tiledbsc==0.1.7

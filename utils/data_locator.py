@@ -54,7 +54,6 @@ class BenchmarkSOCOLocator(BaseDataLocator):
         path = os.path.join(
             start,
             "tiledb",
-            self.soco_name,
         )
 
         return path

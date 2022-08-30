@@ -1,5 +1,6 @@
 import tiledb
 import tiledbsc
+import os
 from utils.data_locator import DataLocator
 from data_classes.tiledb import PAISOMA, PAISOCO
 
@@ -27,14 +28,16 @@ if __name__ == "__main__":
         "external_wu_emboj_2021_32790115",
     ]
     soco_locator = DataLocator(soco=True, benchmark=True, soco_name=soco_name)
-    soco = PAISOCO(data_locator=soco_locator, local_or_s3="s3")
+    soco = PAISOCO(data_locator=soco_locator, local_or_s3="local")
+    print(soco)
     print(soco.soma_options)
     for dataset_name in dataset_names:
         soma_locator = DataLocator(dataset_name=dataset_name, benchmark=True)
-        soma = PAISOMA(data_locator=soma_locator, local_or_s3="s3")
+        os.makedirs(soma_locator.local_tiledb_path)
+        soma = PAISOMA(data_locator=soma_locator, local_or_s3="local")
         print(soma)
-        print(soma.obs.df())
 
+        soma._create()
         if soma.name not in soco:
             print(f"Adding {soma} to {soco}")
             soco.add(soma, relative=True)

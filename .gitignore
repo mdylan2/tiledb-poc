@@ -2,3 +2,4 @@ venv/
 adata/
 __pycache__/
 .vscode/
+tiledb/
