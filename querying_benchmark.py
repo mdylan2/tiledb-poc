@@ -35,46 +35,46 @@ print("Experiment 1: Querying for a single gene with increasing datasets (no fil
 print("AnnData flat files...")
 adata_flat_times = {}
 for i in range(10):
-    start = time.time()
+    start = time.perf_counter()
     for adata_path in adata_paths[:i]:
         adata = sc.read(adata_path)
         if gene in adata.var.index:
             gene_exp = adata[:, gene].to_df()
-    time_taken = time.time() - start
+    time_taken = time.perf_counter() - start
     adata_flat_times[i] = time_taken
 
 
 print("AnnData in memory...")
 adata_mem_times = {}
 for i in range(10):
-    start = time.time()
+    start = time.perf_counter()
     for adata_path in adata_paths[:i]:
         adata = adatas_dict[adata_path]
         if gene in adata.var.index:
             gene_exp = adata[:, gene].to_df()
-    time_taken = time.time() - start
+    time_taken = time.perf_counter() - start
     adata_mem_times[i] = time_taken
 
 print("SOMA COllection...")
 soco_flat_times = {}
 soma_collection = tiledbsc.SOMACollection(uri=soco_root_dir, ctx=tiledb_ctx)
 for i in range(10):
-    start = time.time()
+    start = time.perf_counter()
     for dataset in datasets[:i]:
         gene_exp = soma_collection.query(
             obs_query_string=f'dataset_name == "{dataset}"', var_query_string=f'gene == "{gene}"'
         )[0].X["data"]
-    time_taken = time.time() - start
+    time_taken = time.perf_counter() - start
     soco_flat_times[i] = time_taken
 
 print("SOMAs Individually...")
 soma_flat_times = {}
 for i in range(10):
-    start = time.time()
+    start = time.perf_counter()
     for soma_path in soma_paths[:i]:
         soma = tiledbsc.SOMA(uri=soma_path, ctx=tiledb_ctx)
         gene_exp = soma.query(var_query_string=f'gene == "{gene}"').X["data"]
-    time_taken = time.time() - start
+    time_taken = time.perf_counter() - start
     soma_flat_times[i] = time_taken
 
 print("Producing and saving figure to benchmark_sub_datasets.html")
