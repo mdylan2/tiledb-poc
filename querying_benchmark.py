@@ -31,7 +31,7 @@ soma_paths = list(map(lambda x: os.path.join(soco_root_dir, x), datasets))
 
 adatas_dict = {adata_path: sc.read(adata_path) for adata_path in adata_paths}
 
-print("Experiment 1: Querying for a single gene with increasing datasets (no filtration on datasets)")
+print("Experiment 1: Gene queries (i.e. filtering by var)")
 print("AnnData flat files...")
 adata_flat_times = {}
 for i in range(10):
@@ -55,17 +55,17 @@ for i in range(10):
     time_taken = time.perf_counter() - start
     adata_mem_times[i] = time_taken
 
-print("SOMA COllection...")
-soco_flat_times = {}
-soma_collection = tiledbsc.SOMACollection(uri=soco_root_dir, ctx=tiledb_ctx)
-for i in range(10):
-    start = time.perf_counter()
-    for dataset in datasets[:i]:
-        gene_exp = soma_collection.query(
-            obs_query_string=f'dataset_name == "{dataset}"', var_query_string=f'gene == "{gene}"'
-        )[0].X["data"]
-    time_taken = time.perf_counter() - start
-    soco_flat_times[i] = time_taken
+# print("SOMA COllection...")
+# soco_flat_times = {}
+# soma_collection = tiledbsc.SOMACollection(uri=soco_root_dir, ctx=tiledb_ctx)
+# for i in range(10):
+#     start = time.perf_counter()
+#     for dataset in datasets[:i]:
+#         gene_exp = soma_collection.query(
+#             obs_query_string=f'dataset_name == "{dataset}"', var_query_string=f'gene == "{gene}"'
+#         )[0].X["data"]
+#     time_taken = time.perf_counter() - start
+#     soco_flat_times[i] = time_taken
 
 print("SOMAs Individually...")
 soma_flat_times = {}
@@ -77,17 +77,74 @@ for i in range(10):
     time_taken = time.perf_counter() - start
     soma_flat_times[i] = time_taken
 
-print("Producing and saving figure to benchmark_sub_datasets.html")
-df = pd.DataFrame([soco_flat_times, soma_flat_times, adata_flat_times, adata_mem_times]).T
+figure_name = "benchmark_gene-query.html"
+print(f"Producing and saving figure to {figure_name}")
+df = pd.DataFrame([soma_flat_times, adata_flat_times, adata_mem_times]).T
 df.columns = [
-    "Querying local SOCO",
     "Querying Individual local SOMAs",
     "Querying Individual local AnnData",
     "Querying Individual in-memory AnnData",
 ]
-fig = px.line(df, title="Benchmarking Tiledb and AnnData (Adding Subsequent Datasets)")
+fig = px.line(df, title="Experiment 1: Benchmarking Tiledb and AnnData (Adding Subsequent Datasets)")
 fig.update_layout(yaxis=dict(title="Time taken to query 1 gene (s)"), xaxis=dict(title="Number of datasets queried"))
-fig.write_html("benchmark_sub_datasets.html")
+fig.write_html(figure_name)
 
 
+print("Experiment 2: Cell queries (i.e. filtering by obs)")
+print("AnnData flat files...")
+adata_flat_times = {}
+for i in range(10):
+    start = time.perf_counter()
+    for adata_path in adata_paths[:i]:
+        adata = sc.read(adata_path)
+        if gene in adata.var.index:
+            gene_exp = adata[adata.obs["split"] == "train", :]
+    time_taken = time.perf_counter() - start
+    adata_flat_times[i] = time_taken
+
+
+print("AnnData in memory...")
+adata_mem_times = {}
+for i in range(10):
+    start = time.perf_counter()
+    for adata_path in adata_paths[:i]:
+        adata = adatas_dict[adata_path]
+        if gene in adata.var.index:
+            gene_exp = adata[adata.obs["split"] == "train", :]
+    time_taken = time.perf_counter() - start
+    adata_mem_times[i] = time_taken
+
+# print("SOMA COllection...")
+# soco_flat_times = {}
+# soma_collection = tiledbsc.SOMACollection(uri=soco_root_dir, ctx=tiledb_ctx)
+# for i in range(10):
+#     start = time.perf_counter()
+#     for dataset in datasets[:i]:
+#         gene_exp = soma_collection.query(obs_query_string=f'dataset_name == "{dataset}"')[0].X["data"]
+#     time_taken = time.perf_counter() - start
+#     soco_flat_times[i] = time_taken
+
+print("SOMAs Individually...")
+soma_flat_times = {}
+for i in range(10):
+    start = time.perf_counter()
+    for soma_path in soma_paths[:i]:
+        soma = tiledbsc.SOMA(uri=soma_path, ctx=tiledb_ctx)
+        gene_exp = soma.query(obs_query_string=f'split == "train"')
+    time_taken = time.perf_counter() - start
+    soma_flat_times[i] = time_taken
+
+figure_name = "benchmark_cell-query.html"
+print(f"Producing and saving figure to {figure_name}")
+df = pd.DataFrame([soma_flat_times, adata_flat_times, adata_mem_times]).T
+df.columns = [
+    "Querying Individual local SOMAs",
+    "Querying Individual local AnnData",
+    "Querying Individual in-memory AnnData",
+]
+fig = px.line(df, title="Experiment 2: Benchmarking Tiledb and AnnData (Adding Subsequent Datasets)")
+fig.update_layout(
+    yaxis=dict(title="Time taken to query split==train in obs"), xaxis=dict(title="Number of datasets queried")
+)
+fig.write_html(figure_name)
 print("Done!")
